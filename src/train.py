@@ -5,35 +5,9 @@ import torch
 from torch import nn
 
 from data_loader import ASLDataset, DataLoader, get_splits
+from models import ASLCLassifierBaseline, ASLClassifierCNN
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-
-
-class ASLCLassifierBaseline(nn.Module):
-    def __init__(self, input_shape: int, hidden_units: int, output_shape: int):
-        super().__init__()
-        self.layer_stack = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(in_features=input_shape, out_features=hidden_units), 
-            nn.ReLU(),
-            nn.Linear(in_features=hidden_units, out_features=output_shape),
-            # nn.ReLU(),
-        )
-    
-    def forward(self, x:torch.Tensor):
-        return self.layer_stack(x)
-
-# class ASLClassifierCNN(nn.Module):
-    
-#     def __init__(self, input_shape:int, hidden_units:int, output_shape:int):
-#         super().__init__()
-        
-#         self.block_1 = nn.Sequential(
-            
-#         )
-
-
-
 
 def main():
     
@@ -62,7 +36,7 @@ def main():
                                            hidden_units=10,
                                            output_shape=int(args.num_classes)).to(DEVICE)
     
-    print(model_baseline)
+
 
 
 if __name__ == "__main__":
