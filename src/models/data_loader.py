@@ -5,6 +5,7 @@ from typing import Tuple
 import torch
 from torch.utils.data import Dataset, DataLoader
 
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 @dataclass
 class ASLDataset(Dataset):
@@ -16,8 +17,8 @@ class ASLDataset(Dataset):
     
     def __getitem__(self, idx:int):
         return {
-            "features" : torch.Tensor(self.X[idx]),
-            "label" : torch.FloatTensor([self.y[idx]])
+            "features" : torch.tensor(self.X[idx], device=DEVICE),
+            "label" : torch.tensor([self.y[idx]], device=DEVICE)
         }
         
 def get_splits(data_dir:str) -> Tuple[np.ndarray]:
