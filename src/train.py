@@ -126,10 +126,10 @@ def main():
     
     train_dataloader = DataLoader(dataset=ASLDataset(X_train, y_train),
                                   batch_size=bs,
-                                  shuffle=True)
+                                  shuffle=False)
     test_dataloader = DataLoader(dataset=ASLDataset(X_test, y_test),
                                   batch_size=bs,
-                                  shuffle=True)
+                                  shuffle=False)
     
     model_baseline = ASLCLassifierBaseline(input_shape=3072, 
                                            hidden_units=10,
