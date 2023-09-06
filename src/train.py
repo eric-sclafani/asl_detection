@@ -1,18 +1,30 @@
 #!/usr/bin/env python3
 
 import argparse
-from tqdm import tqdm
+from tqdm.auto import tqdm
+import time
 import torch
 from torch import nn
 from torch.optim import SGD, Adam
 from torchmetrics import Accuracy
+from torch.utils.data import DataLoader
 
-from data_loader import ASLDataset, DataLoader, get_splits, measure_time
+from data_loader import ASLDataset, get_splits
 from models import ASLCLassifierBaseline, ASLClassifierCNN
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-@measure_time
+def measure_time(func):
+    """Debugging function for measuring function execution time"""
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(f"Function '{func.__name__}' executed in {execution_time:.6f} seconds.")
+        return result
+    return wrapper
+
 def train_model(model: nn.Module,
                 data_loader: DataLoader,
                 loss_fn: nn.Module,
@@ -27,7 +39,7 @@ def train_model(model: nn.Module,
 
         loss = loss_fn(y_pred, y)
         train_loss += loss
-        train_acc += accuracy(y_true=y, y_pred=y_pred.argmax(dim=1)).item()
+        train_acc += accuracy(y_pred, y).item()
 
         optimizer.zero_grad()
         loss.backward()
@@ -37,7 +49,6 @@ def train_model(model: nn.Module,
     train_acc /= len(data_loader)
     print(f"Train loss: {train_loss:.5f} | Train accuracy: {train_acc:.2f}%")
     
-@measure_time
 def test_model(data_loader: DataLoader,
                 model: nn.Module,
                 loss_fn: nn.Module,
@@ -52,12 +63,13 @@ def test_model(data_loader: DataLoader,
             test_pred = model(X)
             
             test_loss += loss_fn(test_pred, y)
-            test_acc += accuracy(y_true=y, y_pred=test_pred.argmax(dim=1)).item()
+            test_acc += accuracy(test_pred, y).item()
         
         test_loss /= len(data_loader)
         test_acc /= len(data_loader)
         print(f"Test loss: {test_loss:.5f} | Test accuracy: {test_acc:.2f}%\n")
 
+@measure_time
 def run_pipeline(epochs:int,
                  model:nn.Module,
                  train_dataloader:DataLoader,
@@ -119,7 +131,7 @@ def main():
                                   batch_size=bs,
                                   shuffle=True)
     
-    model_baseline = ASLCLassifierBaseline(input_shape=1024, 
+    model_baseline = ASLCLassifierBaseline(input_shape=3072, 
                                            hidden_units=10,
                                            output_shape=num_classes)
     
@@ -128,6 +140,7 @@ def main():
                     lr=lr)
     accuracy = Accuracy(task="multiclass", num_classes=num_classes)
     
+    torch.manual_seed(42)
     run_pipeline(epochs,
                  model_baseline,
                  train_dataloader,
