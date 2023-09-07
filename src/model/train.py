@@ -154,7 +154,8 @@ def main():
                  accuracy
                  )
     print("Saving torch model...")
-    torch.save(model_baseline.state_dict(), "src/model/asl_baseline.pt")
+    scripted_model = torch.jit.script(model_baseline)
+    scripted_model.save("src/model/asl_baseline.pt")
     
 
 
