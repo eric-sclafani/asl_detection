@@ -49,10 +49,12 @@ def main():
     
     X_train, X_test, y_train, y_test = train_test_split(images_normalized, 
                                                         one_hot_labels,
-                                                        test_size=.2)
+                                                        test_size=.2,
+                                                        random_state=42)
 
     for array, fname in [(X_train, "X_train.npy"), (X_test, "X_test.npy"), (y_train, "y_train.npy"), (y_test, "y_test.npy")]:
         np.save(f"{args.output_path}/{fname}", array)
+    
     
 
 if __name__ == "__main__":

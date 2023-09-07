@@ -2,11 +2,15 @@
 
 import cv2
 import argparse
+import time
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
 
-#from model.torch_models import ASLClassifierBaseline, ASLClassifierCNN
+
+CLASSES =["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+          "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+          "del", "nothing", "space"]
 
 
 def load_model(path:str) -> nn.Module:
@@ -46,12 +50,16 @@ def main():
             output = model(input_tensor)
             
         predicted_class = torch.argmax(output).item()
-        print(f"Predicted Class: {predicted_class}")
-        cv2.putText(frame, f"Class: {predicted_class}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        
+        prediction = CLASSES[predicted_class]
+        print(f"Predicted Class: {prediction}")
+        cv2.putText(frame, f"Class: {prediction}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         cv2.imshow("Hand Gesture Classification", frame)
         
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
+        
+        time.sleep(1)
 
     cap.release()
     cv2.destroyAllWindows()

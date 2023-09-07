@@ -51,10 +51,10 @@ def train_model(model: nn.Module,
     print(f"Train loss: {train_loss:.5f} | Train accuracy: {train_acc:.2f}%")
     
 def test_model(data_loader: DataLoader,
-                model: nn.Module,
-                loss_fn: nn.Module,
-                accuracy:Accuracy,
-                device: torch.device = DEVICE):
+               model: nn.Module,
+               loss_fn: nn.Module,
+               accuracy:Accuracy,
+               device: torch.device = DEVICE):
     
     test_loss, test_acc = 0, 0
     model.to(device)
